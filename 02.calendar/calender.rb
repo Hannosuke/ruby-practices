@@ -13,11 +13,11 @@ OptionParser.new do |opt|
   rescue OptionParser::InvalidOption => e
     puts "calender.rb:\s#{e.reason=('illegal option')}\s#{e.args.join(' ')}"
     puts opt.help
-    exit
+    exit 1
   rescue OptionParser::MissingArgument => e
     puts "option requires an argument\s#{e.args.join(' ')}"
     puts opt.help
-    exit
+    exit 1
   end
 end
 
