@@ -23,7 +23,7 @@ end
 
 # オプション有無の処理
 if option[:year] 
-  year = option[:year].to_i if nil == (option[:year] =~ /[^0-9]/) 
+  year = option[:year].to_i if option[:year] =~ /^\d+$/
 
   unless (1..9999).include?(year)
    puts "calender.rb: year #{option[:year]} not in range 1..9999"
@@ -34,7 +34,7 @@ else
 end
 
 if option[:month]
-  month = option[:month].to_i if nil == (option[:month] =~ /[^0-9]/)
+  month = option[:month].to_i if option[:month] =~ /^\d+$/
 
   unless (1..12).include?(month)
     puts "calender.rb: #{option[:month]} is neither a month number (1..12) nor a name"
