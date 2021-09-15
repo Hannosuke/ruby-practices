@@ -92,8 +92,8 @@ num_of_lines = file_names.count / num_of_column # 表示する行数(要素数�
 file_names.each_slice(num_of_lines) { |v| formated_file_names << v }
 formated_file_names = formated_file_names.transpose
 
-formated_file_names.each do |formated_file_name|
-  formated_file_name.each.with_index(1) do |file_name, i|
+formated_file_names.each do |file_names_per_line|
+  file_names_per_line.each.with_index(1) do |file_name, i|
     print file_name.ljust(column_width)
     print "\n" if i == num_of_column
   end
