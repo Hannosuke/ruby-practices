@@ -13,8 +13,8 @@ OptionParser.new do |opt|
   opt.parse!(ARGV)
 end
 
-file_names = Dir.glob('*').sort
-file_names = Dir.entries('.').sort if option[:a]
+file_names = Dir.glob('*')
+file_names = Dir.glob('*', File::FNM_DOTMATCH) if option[:a]
 file_names = file_names.reverse if option[:r]
 
 def convert_into_character(num_of_permission)
