@@ -86,13 +86,13 @@ column_width = console_width / num_of_column # 一列あたりの幅を算出
 
 # 縦出力のための加工
 file_names << "\s" until (file_names.count % num_of_column).zero? # 整形にあたってズレが生じないよう、空白を配列に加える
-formated_file_names = []
+formatted_file_names = []
 
 num_of_lines = file_names.count / num_of_column # 表示する行数(要素数を列数で割った数)を算出
-file_names.each_slice(num_of_lines) { |v| formated_file_names << v }
-formated_file_names = formated_file_names.transpose
+file_names.each_slice(num_of_lines) { |v| formatted_file_names << v }
+formatted_file_names = formatted_file_names.transpose
 
-formated_file_names.each do |file_names_per_line|
+formatted_file_names.each do |file_names_per_line|
   file_names_per_line.each.with_index(1) do |file_name, i|
     print file_name.ljust(column_width)
     print "\n" if i == num_of_column
