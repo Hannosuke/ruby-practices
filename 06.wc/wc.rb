@@ -47,15 +47,14 @@ if ARGV.count.positive?
     if option[:l]
       info << file_name
 
-      puts info.join(' ')
       info_for_total << info.slice(0) if multi_args?
     else
       info << amount_of_words(str)
       info << File.size(file_name) << file_name
 
-      puts info.join(' ')
       info_for_total << info.slice(0..-2) if multi_args?
     end
+    puts info.join(' ')
   end
 
   # 引数が複数ある場合は最後にトータルを出力
