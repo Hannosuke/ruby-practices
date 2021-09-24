@@ -13,9 +13,23 @@ def multi_args?
   ARGV.count >= 2
 end
 
+def total_info(info_for_total, option_l = nil)
+  if option_l
+    puts "#{info_for_total.sum} total"
+    return
+  end
+
+  info_for_total = info_for_total.transpose.map(&:sum) << 'total'
+  puts info_for_total.join(' ')
+end
+
+def amount_of_words(str)
+  str.split(/\n+|\t+\s+|[[:space:]]+/).size
+end
+
 if ARGV.count.positive?
   # 引数が複数の場合は合計出力用配列を用意
-  total_info = [] if multi_args?
+  info_for_total = [] if multi_args?
 
   ARGV.each do |file_name|
     if !Dir.entries('.').include?(file_name)
@@ -34,27 +48,18 @@ if ARGV.count.positive?
       info << file_name
 
       puts info.join(' ')
-      total_info << info.slice(0) if multi_args?
+      info_for_total << info.slice(0) if multi_args?
     else
-      info << str.split(/\n+|\t+\s+|[[:space:]]+/).size
-      info << File.size(file_name)
-      info << file_name
+      info << amount_of_words(str)
+      info << File.size(file_name) << file_name
 
       puts info.join(' ')
-      total_info << info.slice(0..-2) if multi_args?
+      info_for_total << info.slice(0..-2) if multi_args?
     end
   end
 
   # 引数が複数ある場合は最後にトータルを出力
-  if multi_args?
-    if option[:l]
-      puts "#{total_info.sum} total"
-      return
-    end
-
-    total_info = total_info.transpose.map(&:sum) << 'total'
-    puts total_info.join(' ')
-  end
+  total_info(info_for_total, option[:l]) if multi_args?
   return
 end
 
@@ -65,7 +70,7 @@ if option[:l]
   puts str.count
 else
   info << str.count
-  amounts_of_words = str.map { |line| line.split(/\n+|\t+\s+|[[:space:]]+/).size }
+  amounts_of_words = str.map { |line| amount_of_words(line) }
   info << amounts_of_words.sum
   info << str.join.bytesize
 
