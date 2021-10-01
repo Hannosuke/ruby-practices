@@ -72,6 +72,7 @@ if option[:l]
   end
   puts "total #{nums_of_file_blocks.sum}"
   puts file_details
+
   # lオプションがある時は整形出力しないため、ここで終了
   return
 end
