@@ -3,7 +3,6 @@
 require 'optparse'
 require 'etc'
 
-# オプション設定処理
 option = {}
 
 OptionParser.new do |opt|
@@ -14,17 +13,12 @@ OptionParser.new do |opt|
   opt.parse!(ARGV)
 end
 
-# 出力内容加工処理
-# オプションに応じて処理
-file_names = Dir.glob('*').sort
-file_names = Dir.entries('.').sort if option[:a]
+file_names = Dir.glob('*')
+file_names = Dir.glob('*', File::FNM_DOTMATCH) if option[:a]
 file_names = file_names.reverse if option[:r]
 
-# -lオプションがある場合の処理
-# 8進数のアクセス権を文字に直す処理
 def convert_into_character(num_of_permission)
   case num_of_permission.to_i
-  # 各8進数の数字と対応する権限を代入
   when 0
     '---'
   when 1
@@ -44,14 +38,12 @@ def convert_into_character(num_of_permission)
   end
 end
 
-file_details = [] # 各ファイルの詳細情報格納配列
-nums_of_file_blocks = [] # 各ファイルの割り当てブロック数格納配列
+file_details = []
+nums_of_file_blocks = []
 if option[:l]
-  # 対象のファイルが入った配列をeachで処理
   file_names.each do |file|
-    file_info = [] # 各ファイルの情報結合用配列
+    file_info = []
     stat = File.stat(file)
-    # ファイルタイプを取得
     ftype = stat.ftype
     file_info <<
       case ftype
@@ -63,9 +55,8 @@ if option[:l]
         ftype[0]
       end
 
-    # モードを8進数で取得、権限部分（下3桁）を
+    # モードを8進数で取得、権限部分（下3桁）を解析
     file_mode = format('%o', stat.mode).slice!(-3, 3).split('')
-    # 下3桁を解析
     file_mode.each do |permission|
       file_info << convert_into_character(permission)
     end
@@ -77,35 +68,34 @@ if option[:l]
     file_info << "  #{stat.size}"
     file_info << " #{stat.ctime.strftime("%-m\s\s%-d\s%H:%M")}"
     file_info << " #{file}"
-    # 各情報を一つの文字列に結合
     file_details << file_info.join
   end
   puts "total #{nums_of_file_blocks.sum}"
   puts file_details
-  return # lオプションがある時は整形出力しないため、ここで終了
+
+  # lオプションがある時は整形出力しないため、ここで終了
+  return
 end
 
-# 出力整形処理パート
-MAX_COLUMN = 3 # 今回は上限3列が要件
-console_width = `tput cols`.to_i # ターミナルの幅を取得
+# 今回は上限3列が要件
+MAX_COLUMN = 3
+console_width = `tput cols`.to_i
 max_length = file_names.max_by(&:length).length # ファイル名の最大文字数を算出
-num_of_column = console_width / (max_length + 1) # 表示できる列数を算出(余裕を持たせるためプラス1して計算)
-num_of_column = MAX_COLUMN if num_of_column > MAX_COLUMN # 列数が上限を超えないようにする
+num_of_column = console_width / (max_length + 1) # 表示できる列数を算出(余裕を持たせるため最大文字数+1で計算)
+num_of_column = MAX_COLUMN if num_of_column > MAX_COLUMN
 column_width = console_width / num_of_column # 一列あたりの幅を算出
 
 # 縦出力のための加工
 file_names << "\s" until (file_names.count % num_of_column).zero? # 整形にあたってズレが生じないよう、空白を配列に加える
-
-formated_file_names = [] # 最終出力用配列を用意
+formatted_file_names = []
 
 num_of_lines = file_names.count / num_of_column # 表示する行数(要素数を列数で割った数)を算出
-file_names.each_slice(num_of_lines) { |v| formated_file_names << v } # 行数にeach_sliceし、最終出力用配列に格納
-formated_file_names = formated_file_names.transpose # その結果をtransposeし、出力前の配列が完成
+file_names.each_slice(num_of_lines) { |v| formatted_file_names << v }
+formatted_file_names = formatted_file_names.transpose
 
-# 出力処理
-formated_file_names.each do |formated_file_name|
-  formated_file_name.each.with_index(1) do |file_name, i|
+formatted_file_names.each do |file_names_per_line|
+  file_names_per_line.each.with_index(1) do |file_name, i|
     print file_name.ljust(column_width)
-    print "\n" if i == num_of_column # 表示する列数に合わせて改行を入れる
+    print "\n" if i == num_of_column
   end
 end
