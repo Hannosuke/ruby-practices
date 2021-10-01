@@ -10,11 +10,9 @@ class Game
   end
 
   def result
-    scores = 0
-    @frames.each do |frame|
-      scores += frame.score(next_frame(frame), after_next_frame(frame))
+    @frames.inject(0) do |score, frame|
+      score + frame.score(next_frame(frame), after_next_frame(frame))
     end
-    scores
   end
 
   private
