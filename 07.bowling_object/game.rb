@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative 'frame'
+
 class Game
   def initialize(marks)
     @frames = formatted_marks(marks).map.with_index(1) do |formatted_marks, number|
